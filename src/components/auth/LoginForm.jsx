@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '../ui/Button.jsx'
 import { Divider } from '../ui/Divider.jsx'
-import { InputField } from '../ui/Input.jsx'
+import { InputField } from '../ui/InputField.jsx'
 import { Label, Text } from '../ui/Typography.jsx'
 
 export function LoginForm() {
