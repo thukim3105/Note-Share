@@ -1,4 +1,4 @@
-import { Label } from './Label.jsx'
+import { Label } from './Typography.jsx'
 
 export function InputField({
     label,
