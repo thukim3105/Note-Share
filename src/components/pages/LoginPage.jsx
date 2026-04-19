@@ -7,7 +7,7 @@ export function LoginPage() {
     return (
         <main className="min-h-screen bg-[#f5f4ed] text-[#141413]">
             <div className="flex min-h-screen items-center justify-center px-6">
-                <Card>
+                <Card className="mx-auto w-30vw rounded-3xl border border-[#f0eee6] bg-[#faf9f5] px-8 py-10 space-y-8">
                     <div className="space-y-8">
                         <div className="space-y-3 text-center">
                             <Label className="mx-auto">NOTE SHARE</Label>
