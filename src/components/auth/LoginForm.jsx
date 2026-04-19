@@ -1,25 +1,44 @@
 import { useState } from 'react'
 import { Button } from '../ui/Button.jsx'
 import { Divider } from '../ui/Divider.jsx'
-import { InputField } from '../ui/Input.jsx'
+import { InputField } from '../ui/InputField.jsx'
 import { Label, Text } from '../ui/Typography.jsx'
 
-export function LoginForm() {
-    const [form, setForm] = useState({ email: '', password: '' })
-    const [submitted, setSubmitted] = useState(false)
+export function LoginForm({
+    form: externalForm,
+    onChange,
+    onSubmit,
+    submitted = false,
+    error = '',
+    loading = false,
+    submitLabel = 'SIGN IN',
+}) {
+    const [localForm, setLocalForm] = useState({ email: '', password: '' })
+    const [internalSubmitted, setInternalSubmitted] = useState(false)
+
+    const form = externalForm || localForm
+    const isSubmitted = submitted || internalSubmitted
 
     const handleChange = (event) => {
         const { name, value } = event.target
-        setForm((prev) => ({ ...prev, [name]: value }))
+        if (onChange) {
+            onChange(event)
+            return
+        }
+
+        setLocalForm((prev) => ({ ...prev, [name]: value }))
     }
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        setSubmitted(true)
+        setInternalSubmitted(true)
+        if (onSubmit) {
+            onSubmit(event)
+        }
     }
 
-    const emailError = submitted && !form.email ? 'Please enter your email address.' : ''
-    const passwordError = submitted && !form.password ? 'Please enter your password.' : ''
+    const emailError = isSubmitted && !form?.email ? 'Please enter your email address.' : ''
+    const passwordError = isSubmitted && !form?.password ? 'Please enter your password.' : ''
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -27,7 +46,7 @@ export function LoginForm() {
                 id="email"
                 label="EMAIL ADDRESS"
                 type="email"
-                value={form.email}
+                value={form?.email || ''}
                 onChange={handleChange}
                 placeholder="scholar@manuscript.org"
                 error={emailError}
@@ -37,7 +56,7 @@ export function LoginForm() {
                 id="password"
                 label="PASSWORD"
                 type="password"
-                value={form.password}
+                value={form?.password || ''}
                 onChange={handleChange}
                 placeholder="Enter your password"
                 labelAction={
@@ -48,7 +67,11 @@ export function LoginForm() {
                 error={passwordError}
             />
 
-            <Button type="submit">SIGN IN</Button>
+            {error ? <Text className="text-sm text-[#b53333]">{error}</Text> : null}
+
+            <Button type="submit" disabled={loading}>
+                {submitLabel}
+            </Button>
 
             <div className="pt-6 space-y-3">
                 <Divider />
