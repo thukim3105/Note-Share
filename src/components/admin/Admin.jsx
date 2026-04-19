@@ -22,6 +22,7 @@ import { Modal } from "../ui/Modal.jsx";
 import { Tabs } from "../ui/Tabs.jsx";
 import { Heading, Label, Text } from "../ui/Typography.jsx";
 import { AdminLoginForm } from "./AdminLoginForm.jsx";
+import { UserModal } from "./UserModal.jsx";
 
 export function Admin() {
   const [token, setToken] = useState(() => {
@@ -40,15 +41,7 @@ export function Admin() {
   const [searchEmail, setSearchEmail] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
-
-  const [userForm, setUserForm] = useState({
-    email: "",
-    name: "",
-    password: "",
-    position: "",
-    avatar_url: "",
-    bio: "",
-  });
+  const [userModalOpen, setUserModalOpen] = useState(false);
 
   const [bulkDeleteIds, setBulkDeleteIds] = useState("");
   const [bulkCreateJson, setBulkCreateJson] = useState(
@@ -135,37 +128,17 @@ export function Admin() {
     await fetchUsers();
   };
 
-  const handleUserChange = (event) => {
-    const { name, value } = event.target;
-    setUserForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const selectUser = (user) => {
+  const openUserModal = (user = null) => {
     setSelectedUser(user);
-    setUserForm({
-      email: user.email || "",
-      name: user.name || "",
-      password: "",
-      position: user.position || "",
-      avatar_url: user.avatar_url || "",
-      bio: user.bio || "",
-    });
+    setUserModalOpen(true);
   };
 
-  const clearUserForm = () => {
+  const closeUserModal = () => {
     setSelectedUser(null);
-    setUserForm({
-      email: "",
-      name: "",
-      password: "",
-      position: "",
-      avatar_url: "",
-      bio: "",
-    });
+    setUserModalOpen(false);
   };
 
-  const handleUserSave = async (event) => {
-    event.preventDefault();
+  const handleUserModalSave = async (userForm) => {
     setStatusMessage("");
 
     if (!userForm.email) {
@@ -191,7 +164,7 @@ export function Admin() {
         setStatusMessage("User created successfully.");
       }
       await fetchUsers();
-      clearUserForm();
+      closeUserModal();
     } catch (error) {
       handleError(error);
       setStatusMessage(error.message);
@@ -219,8 +192,7 @@ export function Admin() {
 
       await fetchUsers();
       if (selectedUser?.id === user.id) {
-        setSelectedUser(null);
-        clearUserForm();
+        closeUserModal();
       }
     } catch (error) {
       handleError(error);
@@ -294,6 +266,7 @@ export function Admin() {
     setUsers([]);
     setSelectedUser(null);
     setSelectedIds([]);
+    setUserModalOpen(false);
     setStatusMessage("");
   };
 
@@ -366,7 +339,7 @@ export function Admin() {
       </div>
 
       {activeTab === "directory" ? (
-        <div className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
+        <div>
           <Card className="space-y-6 bg-[#ffffff] p-6">
             <div className="space-y-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -376,7 +349,7 @@ export function Admin() {
                 </div>
                 <Text className="max-w-lg text-sm text-[#5e5d59]">
                   Search users by name or email, select rows for bulk delete,
-                  and open a profile for edit or restore.
+                  and click a user to edit.
                 </Text>
               </div>
 
@@ -415,6 +388,13 @@ export function Admin() {
                   >
                     Reset
                   </Button>
+                  <Button
+                    type="button"
+                    className="w-auto"
+                    onClick={() => openUserModal(null)}
+                  >
+                    Add user
+                  </Button>
                   <Text className="text-sm text-[#5e5d59]">
                     {users.length} users loaded
                   </Text>
@@ -443,9 +423,13 @@ export function Admin() {
                   />
                 </td>,
                 <td key="name" className="p-3 align-top">
-                  <div className="font-medium text-[#141413]">
+                  <button
+                    type="button"
+                    onClick={() => openUserModal(row)}
+                    className="font-medium text-[#141413] hover:underline"
+                  >
                     {row.name || "—"}
-                  </div>
+                  </button>
                   <Text className="text-xs text-[#87867f]">
                     {row.position || "No position"}
                   </Text>
@@ -466,7 +450,7 @@ export function Admin() {
                     items={[
                       {
                         label: "Edit",
-                        onClick: () => selectUser(row),
+                        onClick: () => openUserModal(row),
                       },
                       {
                         label: row.is_deleted ? "Restore" : "Delete",
@@ -504,82 +488,6 @@ export function Admin() {
                 Use selected IDs
               </Button>
             </div>
-          </Card>
-
-          <Card className="space-y-6 bg-[#ffffff] p-6">
-            <div className="space-y-3">
-              <Label>{selectedUser ? "EDIT USER" : "NEW USER"}</Label>
-              <Heading className="text-[1.6rem]">
-                {selectedUser ? "Update user profile" : "Create new user"}
-              </Heading>
-              <Text className="text-sm text-[#5e5d59]">
-                Build or update a user record with the admin user endpoint.
-              </Text>
-            </div>
-
-            <form onSubmit={handleUserSave} className="space-y-4">
-              <InputField
-                id="email"
-                label="Email"
-                value={userForm.email}
-                name="email"
-                onChange={handleUserChange}
-                placeholder="user@example.com"
-              />
-              <InputField
-                id="name"
-                label="Name"
-                value={userForm.name}
-                name="name"
-                onChange={handleUserChange}
-                placeholder="John Doe"
-              />
-              <InputField
-                id="position"
-                label="Position"
-                value={userForm.position}
-                name="position"
-                onChange={handleUserChange}
-                placeholder="Senior Developer"
-              />
-              <InputField
-                id="avatar_url"
-                label="Avatar URL"
-                value={userForm.avatar_url}
-                name="avatar_url"
-                onChange={handleUserChange}
-                placeholder="https://example.com/avatar.jpg"
-              />
-              <InputField
-                id="bio"
-                label="Bio"
-                value={userForm.bio}
-                name="bio"
-                onChange={handleUserChange}
-                placeholder="Short profile biography"
-              />
-              <InputField
-                id="password"
-                label="Password"
-                type="password"
-                value={userForm.password}
-                name="password"
-                onChange={handleUserChange}
-                placeholder="Leave blank to keep existing password"
-              />
-              <div className="flex flex-wrap items-center gap-3">
-                <Button type="submit" className="w-auto">
-                  {selectedUser ? "Save changes" : "Create user"}
-                </Button>
-                <Button
-                  type="button"
-                  className="w-auto bg-[#141413] hover:bg-[#30302e]"
-                  onClick={clearUserForm}
-                >
-                  Reset form
-                </Button>
-              </div>
-            </form>
           </Card>
         </div>
       ) : (
@@ -665,6 +573,15 @@ export function Admin() {
           {statusMessage}
         </div>
       ) : null}
+
+      <UserModal
+        key={userModalOpen ? selectedUser?.id || "new" : "closed"}
+        open={userModalOpen}
+        onClose={closeUserModal}
+        selectedUser={selectedUser}
+        onSave={handleUserModalSave}
+        loading={loading}
+      />
 
       <Modal
         open={confirmModal.open}

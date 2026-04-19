@@ -44,15 +44,15 @@ export function Modal({
   if (!open) return null;
 
   const sizes = {
-    sm: "max-w-md",
-    md: "max-w-2xl",
+    sm: "max-w-sm",
+    md: "max-w-xl",
     lg: "max-w-4xl",
   };
 
   return createPortal(
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#141413]/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === overlayRef.current && closeOnOverlay) {
           onClose?.();
@@ -66,27 +66,57 @@ export function Modal({
         tabIndex={-1}
         className={twMerge(
           clsx(
-            "w-full rounded-3xl border border-[#e8e6dc] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] outline-none",
+            "w-full rounded-xl border border-[#e8e6dc] bg-[#faf9f5] p-8 shadow-[rgba(0,0,0,0.05)_0px_4px_24px] outline-none",
             sizes[size],
             className,
           ),
         )}
       >
-        <div className="flex items-start justify-between gap-4">
-          <div className="text-lg font-semibold text-[#141413]">{title}</div>
+        {/* Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <h2
+            className="font-serif text-2xl font-medium text-[#141413]"
+            style={{ fontFamily: "Georgia, serif", lineHeight: 1.2 }}
+          >
+            {title}
+          </h2>
 
+          {/* Close Button - Minimal X Icon */}
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-[#e8e6dc] bg-[#faf9f5] px-3 py-1.5 text-sm font-medium text-[#5e5d59] transition hover:bg-[#f0eee6]"
+            aria-label="Close modal"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#e8e6dc] bg-white text-[#5e5d59] transition hover:bg-[#f0eee6] hover:text-[#4d4c48] active:ring-1 active:ring-[#d1cfc5]"
           >
-            Close
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 4L4 12M4 4l8 8" />
+            </svg>
           </button>
         </div>
 
-        <div className="mt-5 text-sm text-[#4d4c48]">{children}</div>
+        {/* Content */}
+        <div
+          className="text-base leading-relaxed text-[#4d4c48]"
+          style={{ fontFamily: "system-ui, -apple-system, Arial, sans-serif" }}
+        >
+          {children}
+        </div>
 
-        {actions && <div className="mt-6 flex flex-wrap gap-3">{actions}</div>}
+        {/* Actions */}
+        {actions && (
+          <div className="mt-8 flex flex-wrap items-center justify-end gap-3">
+            {actions}
+          </div>
+        )}
       </div>
     </div>,
     document.body,
