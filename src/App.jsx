@@ -1,7 +1,7 @@
-import { AdminPage } from './components/pages/AdminPage.jsx'
+import { LoginPage } from './components/pages/LoginPage.jsx'
 
 function App() {
-  return <AdminPage />
+  return <LoginPage />
 }
 
 export default App
