@@ -1,7 +1,36 @@
-export function Card({ children, className = '' }) {
-    return (
-        <div className={`mx-auto w-full rounded-[24px] border border-[#f0eee6] bg-[#faf9f5] px-8 py-10 space-y-8 ${className}`}>
-            {children}
-        </div>
-    )
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function Card({
+  children,
+  variant = "default",
+  padding = "md",
+  className,
+  ...props
+}) {
+  const base = "rounded-[24px] border bg-[#faf9f5]";
+
+  const variants = {
+    default: "border-[#f0eee6]",
+    elevated: "border-transparent shadow-md",
+    outlined: "border-[#dcd8cc]",
+  };
+
+  const paddings = {
+    none: "",
+    sm: "p-4",
+    md: "p-8",
+    lg: "p-10",
+  };
+
+  return (
+    <div
+      className={twMerge(
+        clsx(base, variants[variant], paddings[padding], className),
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 }

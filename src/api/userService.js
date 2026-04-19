@@ -1,89 +1,84 @@
-import api from './client.js'
+import api from "./client.js";
 
-const buildAuthConfig = (token) => {
-    if (!token) return {}
+/**
+ * Utils
+ */
+const cleanParams = (params = {}) =>
+  Object.fromEntries(
+    Object.entries(params).filter(
+      ([, v]) => v !== undefined && v !== null && v !== "",
+    ),
+  );
 
-    return {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    }
-}
+const normalizeList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.results)) return data.results;
+  if (Array.isArray(data?.users)) return data.users;
+  return [];
+};
 
-const cleanParams = (params = {}) => {
-    return Object.entries(params).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-            acc[key] = value
-        }
-        return acc
-    }, {})
-}
+/**
+ * Thin wrapper over api.request (no token here → handled in interceptor)
+ */
+const http = async (path, { method = "GET", body, params, raw } = {}) => {
+  const res = await api.request({
+    url: path,
+    method,
+    params: cleanParams(params),
+    data: body,
+  });
+  return raw ? res : res.data;
+};
 
-const normalizeList = (responseData) => {
-    if (Array.isArray(responseData)) {
-        return responseData
-    }
+/**
+ * Auth
+ */
+export const loginAdmin = (payload) =>
+  http("/admin/auth/login", { method: "POST", body: payload });
 
-    if (Array.isArray(responseData?.users)) {
-        return responseData.users
-    }
+/**
+ * Users
+ */
+export const getUsers = async (filters = {}) => {
+  const res = await http("/admin/users", { params: filters, raw: true });
 
-    if (Array.isArray(responseData?.items)) {
-        return responseData.items
-    }
+  return {
+    users: normalizeList(res.data),
+    meta: res.meta ?? null,
+    pagination: res.meta?.pagination ?? res.pagination ?? null,
+  };
+};
 
-    if (Array.isArray(responseData?.results)) {
-        return responseData.results
-    }
+export const createUser = (payload) =>
+  http("/admin/users", { method: "POST", body: payload });
 
-    return []
-}
+export const updateUser = (userId, payload) =>
+  http(`/admin/users/${userId}`, { method: "PUT", body: payload });
 
-export const loginAdmin = async (payload) => {
-    const response = await api.post('/admin/auth/login', payload)
-    return response.data
-}
+export const deleteUser = (userId) =>
+  http(`/admin/users/${userId}`, { method: "DELETE" });
 
-export const getUsers = async (filters = {}, token) => {
-    const response = await api.get('/admin/users', {
-        params: cleanParams(filters),
-        ...buildAuthConfig(token),
-    })
+export const restoreUser = (userId) =>
+  http(`/admin/users/${userId}/restore`, { method: "POST" });
 
-    return {
-        users: normalizeList(response.data),
-        meta: response.meta,
-        pagination: response.meta?.pagination || response.pagination || null,
-    }
-}
+/**
+ * Bulk
+ */
+export const bulkDeleteUsers = (userIds) =>
+  http("/admin/users", {
+    method: "DELETE",
+    body: { user_ids: userIds },
+  });
 
-export const createUser = async (payload, token) => {
-    await api.post('/admin/users', payload, buildAuthConfig(token))
-}
+export const bulkCreateUsers = (users) =>
+  http("/admin/users/bulk/create", {
+    method: "POST",
+    body: { users },
+  });
 
-export const updateUser = async (userId, payload, token) => {
-    await api.put(`/admin/users/${userId}`, payload, buildAuthConfig(token))
-}
-
-export const deleteUser = async (userId, token) => {
-    await api.delete(`/admin/users/${userId}`, buildAuthConfig(token))
-}
-
-export const restoreUser = async (userId, token) => {
-    await api.post(`/admin/users/${userId}/restore`, null, buildAuthConfig(token))
-}
-
-export const bulkDeleteUsers = async (userIds, token) => {
-    await api.delete('/admin/users', {
-        data: { user_ids: userIds },
-        ...buildAuthConfig(token),
-    })
-}
-
-export const bulkCreateUsers = async (users, token) => {
-    await api.post('/admin/users/bulk/create', { users }, buildAuthConfig(token))
-}
-
-export const bulkUpdateUsers = async (users, token) => {
-    await api.put('/admin/users/bulk/update', { users }, buildAuthConfig(token))
-}
+export const bulkUpdateUsers = (users) =>
+  http("/admin/users/bulk/update", {
+    method: "PUT",
+    body: { users },
+  });

@@ -1,7 +1,7 @@
-import { LoginPage } from './components/pages/LoginPage.jsx'
+import AppRoutes from "./Routes.jsx";
 
 function App() {
-  return <LoginPage />
+  return <AppRoutes />;
 }
 
-export default App
+export default App;
