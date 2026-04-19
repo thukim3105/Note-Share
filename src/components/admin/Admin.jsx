@@ -260,16 +260,6 @@ export function Admin() {
     );
   };
 
-  const logout = () => {
-    localStorage.removeItem("admin_token");
-    setToken("");
-    setUsers([]);
-    setSelectedUser(null);
-    setSelectedIds([]);
-    setUserModalOpen(false);
-    setStatusMessage("");
-  };
-
   if (!token) {
     return (
       <div className="grid min-h-[calc(100vh-88px)] place-items-center">
@@ -304,29 +294,6 @@ export function Admin() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 rounded-3xl border border-[#e8e6dc] bg-[#fbf7f2] p-5 md:flex-row md:items-center md:justify-between">
-        <div>
-          <Label>SESSION</Label>
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-[#5e5d59]">
-            <Badge variant="info">Authenticated</Badge>
-            {loading ? <Badge variant="info">Loading…</Badge> : null}
-            <Text className="text-sm">Token length: {token.length}</Text>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button type="button" className="w-auto" onClick={fetchUsers}>
-            Refresh users
-          </Button>
-          <Button
-            type="button"
-            className="w-auto bg-[#141413] hover:bg-[#30302e]"
-            onClick={logout}
-          >
-            Logout
-          </Button>
-        </div>
-      </div>
-
       <div className="rounded-3xl border border-[#e8e6dc] bg-[#fbf7f2] p-4">
         <Tabs
           tabs={[
