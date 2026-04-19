@@ -1,16 +1,7 @@
-import { LoginPage } from './components/pages/LoginPage.jsx'
-import { Routes, Route} from 'react-router-dom';
+import AppRoutes from "./Routes.jsx";
 
 function App() {
-  return (
-    <div>
-      <LoginPage />
-      <Routes>
-        <Route path= "/src/components/pages/LoginPage" element= {<LoginPage />} /> 
-        <Route path= "/src/components/pages/AdminPage" element= {<AdminPage />} /> 
-      </Routes>
-    </div>
-  );
+  return <AppRoutes />;
 }
 
-export default App
+export default App;
