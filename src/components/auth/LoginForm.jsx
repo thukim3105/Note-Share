@@ -74,10 +74,11 @@ export function LoginForm({
 
       {error ? <Text className="text-sm text-[#b53333]">{error}</Text> : null}
 
-      <Button type="submit" disabled={loading}>
-        {submitLabel}
-      </Button>
-
+      <div className="flex justify-center">
+        <Button type="submit" disabled={loading}>
+          {submitLabel}
+        </Button>
+      </div>
       <div className="pt-6 space-y-3">
         <Divider />
         <Text className="text-center">

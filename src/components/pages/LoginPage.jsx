@@ -11,7 +11,7 @@ export function LoginPage() {
           <div className="space-y-8">
             <div className="space-y-3 text-center">
               <Label className="mx-auto">NOTE SHARE</Label>
-              <Heading className="max-w-[120px] mx-auto">
+              <Heading className="mx-auto">
                 Notes and sharing
               </Heading>
               <Divider variant="short" />
