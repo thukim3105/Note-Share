@@ -84,7 +84,7 @@ export function LoginForm({
         <Text className="text-center">
           New to the collection?{" "}
           <a
-            href="#"
+            href="/register"
             className="font-medium text-[#c96442] hover:text-[#b24f31] transition"
           >
             Create an account

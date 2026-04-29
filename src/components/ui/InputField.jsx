@@ -25,6 +25,7 @@ export const InputField = forwardRef(
       className,
       inputClassName,
       containerClassName,
+      labelAction,
       ...props
     },
     ref,

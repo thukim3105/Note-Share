@@ -14,7 +14,7 @@ const api = axios.create({
   // baseURL: địa chỉ gốc cho mọi request (ví dụ: POST /admin/users → http://localhost:8000/api/v1/admin/users)
   // import.meta.env.VITE_API_URL = biến môi trường từ file .env (nếu có)
   // || "http://localhost:8000/api/v1" = nếu không có biến môi trường thì dùng địa chỉ mặc định
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1",
+  baseURL: import.meta.env.VITE_API_URL || "https://note.wc504.io.vn/api/v1",
   
   // timeout: nếu server không phản hồi trong 10000ms (10 giây) thì hủy request
   timeout: 10000,
